@@ -1,4 +1,4 @@
-name: Despliegue en EC2 AWS
+name: Despliegue en EC2 AWS Oficial
 
 on:
   push:
