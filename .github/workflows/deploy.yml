@@ -1,0 +1,34 @@
+name: Despliegue en EC2 AWS
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Descargar el código
+        uses: actions/checkout@v3
+
+      - name: 2. Copiar archivos al servidor EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_EC2 }}
+          username: ${{ secrets.USER_EC2 }}
+          key: ${{ secrets.SSH_KEY_EC2 }}
+          source: "."
+          target: "/home/${{ secrets.USER_EC2 }}/proyecto-semestral"
+
+      - name: 3. Ejecutar Docker en EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_EC2 }}
+          username: ${{ secrets.USER_EC2 }}
+          key: ${{ secrets.SSH_KEY_EC2 }}
+          script: |
+            cd /home/${{ secrets.USER_EC2 }}/proyecto-semestral
+            docker compose down
+            docker compose up -d --build
